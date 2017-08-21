@@ -232,11 +232,20 @@ public class NecroAttack implements Listener {
 					isInvulnerable = true;
 				}
 			}
+			if(event.isCancelled()) {
+				isInvulnerable = true;
+			}
+
+			
 			if(isInvulnerable) {
 				event.setCancelled(true);
-				player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
+				player.getWorld().playSound(player.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
+				return;
 			}
-			else if(player.getInventory().getChestplate() != null) {
+			
+			
+			
+			if(player.getInventory().getChestplate() != null) {
 				if(player.getInventory().getChestplate().getItemMeta().hasLore()) {
 					
 					
@@ -258,30 +267,36 @@ public class NecroAttack implements Listener {
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, (float)1.0, (float)1.0);
 					}
 					else if(haslore(lores, "¡ì7QUARTZ")) {
-						
-						event.setDamage(4);
+						if(event.getDamage() >= 4) {
+							event.setDamage(4);
+						}
+						else {
+							event.setDamage(event.getDamage());
+						}
 						removeGlass(player);
 						
 					}
 				}
 			}
-			else if(ring.contains(player.getInventory().getItemInOffHand().getType())) {
+			else {
+				removeGlass(player);
+			}
+			
+			if(ring.contains(player.getInventory().getItemInOffHand().getType())) {
 				if(player.getInventory().getItemInOffHand().getItemMeta().hasLore()) {
 					List<String> lores = player.getInventory().getItemInOffHand().getItemMeta().getLore();
-					if(haslore(lores, "¡ì7SHIELDING")) {
+					if(haslore(lores, "¡ì7SHIELDING") ) {
 						event.setCancelled(true);
-						player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, (float)1.0, (float)1.0);
+						player.getWorld().playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, (float)1.0, (float)1.0);
 						player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 360, 9), true);
 						player.getInventory().setItemInOffHand(null);
+						return;
 					}
 					else {
 						removeGlass(player);
 					}
 				}
 
-			}
-			else {
-				removeGlass(player);
 			}
 			
 			if(coinmult.containsKey(player.getName()) && !event.isCancelled()) {
